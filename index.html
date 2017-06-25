@@ -5,22 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="src/stylesheets/materialize.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
     <title>Dixeran's Area</title>
 </head>
 <body>
+    <!--nav bar-->
+    <div class="navbar-fixed">
     <nav>
-        <div class="nav-wrapper">
-            <a href="#" class="brand-logo">Dixeran</a>
-            <ul class="right">
-                <li><a href="#">施工中</a></li>
-                <li><a href="#">施工中</a></li>
+        <div class="nav-wrapper blue darken-1">
+            <a href="#" class="right brand-logo">Sub-line 5</a>
+            <ul class="left">
+                <li><a href="#">文章</a></li>
+                <li><a href="#">关于</a></li>
             </ul>
         </div>
     </nav>
-    <div class="col">
-        <img src="src/dist/image/404.jpg" alt="">
     </div>
 
+    <!--Container-->
+    <div class="parallax-container" style="height: 640px">
+        <div class="parallax">
+            <img src="src/dist/image/front.png" alt="">
+        </div>
+    </div>
+
+    <div class="container row">
+        <div class="col s12">
+            <div class="section">
+                <h3>What's Sub-line 5 ?</h3>
+            </div>
+            <div>
+                <p class="flow-text">Sub-line 5 is one of the subway lines in Beijing which goes straight through the City.</p>
+            </div>
+        </div>
+    </div>
+    <div class="divider"></div>
+    <div class="row" id="rePassage">
+        <div class="section col s12 m9 l10 offset-l2 offset-m3">
+            <h3>最近文章</h3>
+        </div>
+        <div class="col s12 m3 l2">
+            <ul class="collection">
+                <template v-for="item in passageName">
+                    <a v-bind:href="'#' + item" class="collection-item">{{ item }}</a>
+                </template>
+            </ul>
+        </div>
+        <div class="col s12 m9 l8">
+            <template v-for="item in passageName">
+                <div class="scrollspy" v-bind:id="item">
+                    <h1 class="text-darken-1 blue-grey-text">{{ item }}</h1>
+                    <div v-bind:id="item + 'conTent'">
+                        <div class="progress">
+                            <div class="indeterminate"></div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+    <div id="cache" style="display: none;"></div>
 </body>
+<script src="src/javascript/jquery-3.1.1.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 <script src="src/javascript/materialize.min.js"></script>
+<script src="src/javascript/vue.js"></script>
+<script src="src/javascript/markdown.min.js"></script>
+<script src="src/javascript/VueData.js"></script>
+<script src="src/javascript/ready.js"></script>
 </html>

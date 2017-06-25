@@ -1,0 +1,252 @@
+##基本语法
+QML是类似于HTML的标记型语言，有与HTML类似的树形节点结构，同时又包含类似JS的函数语法。一个基础的QML文档类似这个样子
+
+	import QtQuick 2.7
+	import QtQuick.Controls 2.0
+	import QtQuick.Layouts 1.0
+
+	ApplicationWindow {
+		objectName: "root"
+		visible: true
+		width: 1280
+		height: 720
+		maximumHeight: this.height
+		minimumHeight: this.height
+		maximumWidth: this.width
+		minimumWidth: this.width
+		title: qsTr("Security Check")
+		font.family: "Source Han Sans CN Normal"
+		Image{
+			x: 0
+			y: 0
+			property int _test: 8
+			property var list: []
+		}
+	}
+
+其中 `ApplicationWindow` 就是整个界面窗口的根节点，可以通过在C++文件中使用
+
+
+	QObject* rootObject;
+	rootObject = engine.rootObjects().first();
+
+得到指向根节点的指针，便于信号槽的链接和函数的调用（[后文](http://www.jianshu.com/p/3a55460bd1bf)）
+###声明一个元素
+在QML中，一个元素类似这样
+
+	Image{
+		property a: x
+		property b: y
+	}
+
+每一种元素有预定义的属性，具体每个类型的元素有什么属性，可以参考[All QML Types](http://doc.qt.io/qt-5/qmltypes.html).
+
+-------------------------------
+
+###动态增加一个元素
+在QML中，动态增加元素是基于一个模版（Component）的，所有需要动态添加的对象，都需要先存在一个模版元素中。
+例如动态添加一个Image元素，可以这样构建：
+
+    Component{
+        id:create
+        Image {
+            id: tourist
+            source: sprites[Math.floor((Math.random()*3))]
+            width: 20
+            height: 20
+            property int x_axid: 1010
+            property int y_axid: 120
+            x:x_axid
+            y:y_axid
+            Behavior on x{
+                SmoothedAnimation{ duration: 500 }
+            }
+            Behavior on y{
+                SmoothedAnimation{ duration: 500 }
+            }
+        }
+
+
+虽然整个QML文档中不允许同时有多个id相同的元素（类似HTML），但是给动态创建的内容id属性却是合法的。
+
+当需要创建这个图形对象时，就可以调用 `create.createObject(parentNode)` 这个QML函数来在parentNode节点下创建一个Image元素，该函数返回创建的元素的指针。
+需要重复创建多个相同的对象时，可以将创建的object存入一个列表中，便于管理，例如这样：
+
+	var obj = create.createObject(image,{});//从模版生成元素
+	list.push(obj)//将元素加入列表
+
+-----------------------------
+###绑定自定义属性
+每个QML元素类型除了预定义的属性（例如x,y,opacity）以外，也可以添加一些我们自定义的属性。
+给元素添加绑定属性类似这样：
+
+	Image{
+		id: img
+		x: 0
+		y: 0
+		property int maxNum: 15//绑定一个整形属性
+		property var list: []//绑定一个列表
+	}
+
+访问一个节点的属性类似这样
+
+	img.maxNum = 15//赋值操作
+
+绑定属性有很多应用，例如在对象的动画中，为了避免对x,y值重复操作，可以使用绑定属性来避免冲突（后文）
+
+---------------------------
+###使用数据模型
+在QML中，有一些预制好的数据模型，例如 ListModel.
+使用 ListModel, 可以随意创建基于 ListItem 的列表，每个元素是一个 ListItem，元素内部又可以包含许多属性，类似C 中的结构体数组
+一个典型的 ListModel 类似这样：
+
+	ListModel {
+								id:cpStateList
+								ListElement {
+									cpIndex:0
+									cpState: "空闲"
+									cpCurrentTime:0
+									cpNeedTime:0
+								}
+
+								ListElement {
+									cpIndex:1
+									cpState:  "空闲"
+									cpCurrentTime:0
+									cpNeedTime:0
+								}
+
+								ListElement {
+									cpIndex:2
+									cpState:  "空闲"
+									cpCurrentTime:0
+									cpNeedTime:0
+								}
+
+								ListElement {
+									cpIndex:3
+									cpState: "空闲"
+									cpCurrentTime:0
+									cpNeedTime:0
+								}
+	}
+
+这样，当我们需要进行数据绑定时，可以将一个列表中的数据和 ListModel 中的 ListItem 一一绑定，当需要操作数据时，使用这样的方法：
+
+	var obj = cpStateList.get(Index)//得到在ListModel中编号为Index的元素
+	obj.xxx = ???//对xxx属性进行赋值
+
+ListModel还有一个重要的应用，就是在一些预置的 View 中作为数据源，渲染到对应的模版上。
+例如，一个 GridView 可以方便的构造一个网格视图，每一个网格都是一个基于delegate（代表性模版）的结构，结构中的数据会自动调用对应的 model 内部的数据。
+一个典型的 GridView 类似这样：
+
+	GridView {
+
+							id: cpStateBoard
+							x: 56
+							y: 13
+							width: 894
+							height: 84
+							cellHeight: height
+							cellWidth: width/8
+
+							delegate: Item {
+								Column {
+									spacing: 30
+										Text{
+											x:0
+											y:10
+											text:cpState
+											font.family: "Source Han Sans CN Normal"
+										}
+
+										Text {
+											x: 0
+											y: 30
+											text: cpCurrentTime + '/' + cpNeedTime
+											opacity: cpState == "关闭" ? 0 : 1
+											font.family: "Source Han Sans CN Normal"
+											//anchors.horizontalCenter: parent.horizontalCenter
+										}
+									}
+								}
+							}
+							model: ListModel {
+								id:cpStateList
+								ListElement {
+									cpIndex:0
+									cpState: "空闲"
+									cpCurrentTime:0
+									cpNeedTime:0
+								}
+
+								ListElement {
+									cpIndex:1
+									cpState:  "空闲"
+									cpCurrentTime:0
+									cpNeedTime:0
+								}
+							}
+
+当使用的model内部有两个数据时，就会渲染出两个网格有两个 Text元素，每个网格内部布局和delegate一致，分别使用了ListElement中的两个数据。通过对model的操作，一个网格就可以动态的增删并且保持统一的格式。
+
+--------------------------------
+###动画的使用
+给一个元素添加动画主要有几种形式：
+- 在元素中定义一个完整的动画，需要运动时调用
+- 给某个属性绑定插值，当某个属性发生改变时自动进行补间
+
+比较常用的是第二种。例如，我希望这个图像运动时能够平滑的移动，可以这样：
+
+    Rectangle {
+        id: details
+        opacity: 0
+
+
+        Behavior on opacity{
+            NumberAnimation{
+                duration: 200
+            }
+        }
+
+        Behavior on x{
+            SmoothedAnimation{
+                duration: 100
+            }
+        }
+
+        Behavior on y{
+            SmoothedAnimation{
+                duration: 100
+            }
+        }
+    }
+
+这样，当x、y值发生改变时，就自动进行一个 SmmoothedAnimation ，经历时长100ms
+这个方法也可以绑定到opacity属性上，实现淡入淡出的效果。
+
+需要注意的是，当一个元素在运动过程中，如果检查他的x,y属性，会发现是当前运动中的值，而不是最终值。所以一定避免在运动过程中进行类似` item.x -= 100 `这样的赋值，否则最终的位置将不是第一次赋值-100，而是运动到某个时刻的位置-100.
+为了避免这样的情况，也可以使用绑定属性的方法，例如（注意x,y属性）：
+
+	Image {
+				id: tourist
+				source: sprites[Math.floor((Math.random()*3))]
+				width: 20
+				height: 20
+				property int x_axid: 1010
+				property int y_axid: 120
+				x:x_axid
+				y:y_axid
+				Behavior on x{
+					SmoothedAnimation{ duration: 500 }
+				}
+				Behavior on y{
+					SmoothedAnimation{ duration: 500 }
+				}
+			}
+
+每次需要改变位置时，改变x_axid/y_axid的值，而x,y属性会随之改变，同时进行运动动画，但是运动过程中，进行` item.x_axid -= 100 `，改变的仍然是最终值-100.
+
+----------------------
+###QML进阶
+最后我想说，QML和HTML类似之处太多，甚至当在QML中不懂怎么写时，试试用JavaScript的写法，说不定能用，例如QML中也有Math.floor()、Number()、String()等等一众函数，QML中的变量也是var（偶尔又是int，傻傻分不清），总之可以多借鉴。
