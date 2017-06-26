@@ -49,8 +49,27 @@ $(document).ready(function () {
     var startPos = $(elm).offset().top;
     $.event.add(window, 'scroll', function () {
         var p = $(window).scrollTop();
-        $(elm).css('position',((p) > startPos) ? 'fixed' : 'static');
-        $(elm).css('right',((p) > startPos) ? '0px' : '');
-        $(elm).css('top',((p) > startPos) ? '75px' : '');
-    })
+        $(elm).css('position', ((p) > startPos) ? 'fixed' : 'static');
+        $(elm).css('right', ((p) > startPos) ? '0px' : '');
+        $(elm).css('top', ((p) > startPos) ? '75px' : '');
+    });
+
+    var PstartPos = $('#rePassage').offset().top;
+    var Pin = 0;
+    $.event.add(window, 'scroll', function () {
+        var p = $(window).scrollTop();
+        $('#locate').css('display', ((p) > PstartPos) ? 'inline' : 'none');
+        if((p) > PstartPos && Pin == 0){
+            var elm = $('#locate');
+            elm.removeClass('animated flipOutX');
+            elm.addClass('animated flipInX');
+            Pin = 1;
+        }
+        if((p) < PstartPos && Pin == 1){
+            var telm = $('#locate');
+            telm.removeClass('animated flipInX');
+            telm.addClass('animated flipOutX');
+            Pin = 0;
+        }
+    });
 });

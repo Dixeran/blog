@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="src/stylesheets/atom-one-light.css">
     <link rel="stylesheet" href="src/stylesheets/local.css">
     <link rel="stylesheet" href="https://anijs.github.io/lib/anicollection/anicollection.css">
+    <link href="https://cdn.bootcss.com/material-design-icons/3.0.1/iconfont/material-icons.min.css" rel="stylesheet">
+    <link href="src/stylesheets/animate.css">
     <title>Dixeran's Area</title>
 </head>
 <body>
@@ -16,6 +18,7 @@
     <nav>
         <div class="nav-wrapper blue darken-1">
             <a href="#" class="right brand-logo">Sub-line 5</a>
+            <i class="center brand-logo hide-on-med-and-down" style="font-size: 1.2rem !important;display: none" id="locate">最近文章</i>
             <ul class="left">
                 <li><a href="#">文章</a></li>
                 <li><a href="#">关于</a></li>
@@ -34,7 +37,7 @@
     <div class="container row">
         <div class="col s12">
             <div class="section">
-                <h3>What's Sub-line 5 ?</h3>
+                <h2>What's Sub-line 5 ?</h2>
             </div>
             <div>
                 <p class="flow-text">Sub-line 5 is one of the subway lines in Beijing which goes straight through the City.</p>
@@ -45,11 +48,11 @@
 
     <!-- Passages -->
     <div class="row" id="rePassage">
-        <div class="section col s12 m9 l10 offset-l2 offset-m3">
-            <h3>最近文章</h3>
+        <div class="section col s12 m10 l10 offset-m2 offset-l2">
+            <h1>最近文章</h1>
         </div>
 
-        <div class="col s12 m8 l8 offset-l2 offset-m2">
+        <div class="col s12 m8 l8 offset-m2 offset-l2">
             <div class="progress">
                 <div class="indeterminate"></div>
             </div>
@@ -90,6 +93,4 @@
 <script src="src/javascript/markdown.min.js"></script>
 <script src="src/javascript/VueData.js"></script>
 <script src="src/javascript/ready.js"></script>
-<script src="src/javascript/anijs-min.js"></script>
-<script src="src/javascript/Tween.js"></script>
 </html>
