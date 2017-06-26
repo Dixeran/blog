@@ -1,3 +1,4 @@
+﻿#Qt quick学习笔记（一）QML界面模型
 ##基本语法
 QML是类似于HTML的标记型语言，有与HTML类似的树形节点结构，同时又包含类似JS的函数语法。一个基础的QML文档类似这个样子
 
@@ -101,34 +102,34 @@ QML是类似于HTML的标记型语言，有与HTML类似的树形节点结构，
 一个典型的 ListModel 类似这样：
 
 	ListModel {
-								id:cpStateList
-								ListElement {
-									cpIndex:0
-									cpState: "空闲"
-									cpCurrentTime:0
-									cpNeedTime:0
-								}
+		id:cpStateList
+		ListElement {
+			cpIndex:0
+			cpState: "空闲"
+			cpCurrentTime:0
+			cpNeedTime:0
+		}
 
-								ListElement {
-									cpIndex:1
-									cpState:  "空闲"
-									cpCurrentTime:0
-									cpNeedTime:0
-								}
+		ListElement {
+			cpIndex:1
+			cpState:  "空闲"
+			cpCurrentTime:0
+			cpNeedTime:0
+		}
 
-								ListElement {
-									cpIndex:2
-									cpState:  "空闲"
-									cpCurrentTime:0
-									cpNeedTime:0
-								}
+		ListElement {
+			cpIndex:2
+			cpState:  "空闲"
+			cpCurrentTime:0
+			cpNeedTime:0
+		}
 
-								ListElement {
-									cpIndex:3
-									cpState: "空闲"
-									cpCurrentTime:0
-									cpNeedTime:0
-								}
+		ListElement {
+			cpIndex:3
+			cpState: "空闲"
+			cpCurrentTime:0
+			cpNeedTime:0
+		}
 	}
 
 这样，当我们需要进行数据绑定时，可以将一个列表中的数据和 ListModel 中的 ListItem 一一绑定，当需要操作数据时，使用这样的方法：
@@ -142,51 +143,51 @@ ListModel还有一个重要的应用，就是在一些预置的 View 中作为�
 
 	GridView {
 
-							id: cpStateBoard
-							x: 56
-							y: 13
-							width: 894
-							height: 84
-							cellHeight: height
-							cellWidth: width/8
+	id: cpStateBoard
+	x: 56
+	y: 13
+	width: 894
+	height: 84
+	cellHeight: height
+	cellWidth: width/8
 
-							delegate: Item {
-								Column {
-									spacing: 30
-										Text{
-											x:0
-											y:10
-											text:cpState
-											font.family: "Source Han Sans CN Normal"
-										}
+	delegate: Item {
+		Column {
+			spacing: 30
+				Text{
+					x:0
+					y:10
+					text:cpState
+					font.family: "Source Han Sans CN Normal"
+				}
 
-										Text {
-											x: 0
-											y: 30
-											text: cpCurrentTime + '/' + cpNeedTime
-											opacity: cpState == "关闭" ? 0 : 1
-											font.family: "Source Han Sans CN Normal"
-											//anchors.horizontalCenter: parent.horizontalCenter
-										}
-									}
-								}
-							}
-							model: ListModel {
-								id:cpStateList
-								ListElement {
-									cpIndex:0
-									cpState: "空闲"
-									cpCurrentTime:0
-									cpNeedTime:0
-								}
+				Text {
+					x: 0
+					y: 30
+					text: cpCurrentTime + '/' + cpNeedTime
+					opacity: cpState == "关闭" ? 0 : 1
+					font.family: "Source Han Sans CN Normal"
+					//anchors.horizontalCenter: parent.horizontalCenter
+				}
+			}
+		}
+	}
+	model: ListModel {
+		id:cpStateList
+		ListElement {
+			cpIndex:0
+			cpState: "空闲"
+			cpCurrentTime:0
+			cpNeedTime:0
+		}
 
-								ListElement {
-									cpIndex:1
-									cpState:  "空闲"
-									cpCurrentTime:0
-									cpNeedTime:0
-								}
-							}
+		ListElement {
+			cpIndex:1
+			cpState:  "空闲"
+			cpCurrentTime:0
+			cpNeedTime:0
+		}
+	}
 
 当使用的model内部有两个数据时，就会渲染出两个网格有两个 Text元素，每个网格内部布局和delegate一致，分别使用了ListElement中的两个数据。通过对model的操作，一个网格就可以动态的增删并且保持统一的格式。
 

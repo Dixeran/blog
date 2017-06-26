@@ -1,0 +1,92 @@
+#Qt_quick学习笔记（二）与C++混合编程
+## QML→C++的对接
+###信号槽机制
+大部分情况下，用户对QML的操作，需要调用对应的C++函数进行处理。QML上的操作，可以通过信号的方式被C++中的槽函数所捕获。
+可以对任意一个元素添加信号:
+ 
+    Button {
+        id: pointRest8
+        x: 8
+        y: 20
+        width: 90
+        height: 43
+        text: qsTr("工作↔休息")
+        objectName: "pointChangeState"
+
+        signal changeState(int num)
+
+        onClicked: { changeState(8); }
+    }
+
+这个按钮元素就添加上了一个名为changeState 的信号，参数是一个整形。
+当发生单击事件时，调用这个信号函数，就相当于emit了这个信号。为了使这个信号能被捕获，我们需要在C++中链接信号槽。
+链接一个QML中的信号到C++的槽函数需要三步（在C++中）
+- 得到整个QML文档的根节点指针（前文）
+- 通过findChild()的方式，找到这个发送这个信号的元素（Object* 指针）
+- 通过QObject::connect()来链接
+
+例如，在QML文档中，有这样一个元素：
+ 
+    ComboBox {
+        id: comboBox
+        objectName: "comboBox"
+        x: 155
+        y: 11
+        currentIndex: 0
+        
+        signal: activated(int)//信号
+    }
+ 
+注意，只有这个元素有 objectName 属性，才能被 findChild() 找到。
+在C++代码中，我们可以这样写：
+ 
+    Object* getObject;
+    getObject= rootObject->findChild<QObject*>("comboBox");
+    QObject::connect(getObject, SIGNAL(activated(int)), &myControl, SLOT(setStrategy(int)));
+ 
+其中 `setStrategy(int) `是一个事先定义好的槽函数。
+这样，当combobox发送了一个信号，我们的C++代码就可以捕获这个信号，并根据传递的参数进行处理。
+
+###如何定义一个槽函数
+只需要这样：
+ 
+    class controlCenter : public QObject
+    {
+        Q_OBJECT
+    public slots:
+        void setStrategy(int num);
+    };
+ 
+有两个必不可少的：
+- Q_OBJECT宏
+- 声明成 public slots
+
+##C++→QML的对接
+相比之下，从C++代码中调用QML中的函数会相对容易。
+首先，假设QML中我定义了一个函数：
+  
+    ComboBox {
+        id: comboBox
+        objectName: "comboBox"
+        x: 155
+        y: 11
+        currentIndex: 0
+        function get_x(num){
+            return this.x;
+        }
+    }
+    
+看起来很像js...
+那么，我们需要调用这个函数的时候，首先需要找到这个函数是属于哪个元素的：
+    
+    Object* getObject;
+    getObject= rootObject->findChild<QObject*>("comboBox");
+    
+之后，通过QMetaObject::invokeMethod()来调用
+    
+    int t = 5;
+    QVariant p(t)
+    QMetaObject::invokeMethod(getObject, "get_x", Q_ARG(QVariant, p);//注意参数
+    
+上面似乎多了点东西，但是由于调用 QML 函数的时候，参数必须是 QVariant 类型，所以无论什么C++类型，我们都可以给他包一层，然后再传参。
+其中，第一个参数是我们拿到的QML节点指针，第二个参数是函数名，后面几个参数可以是Q_ARG(type, name)或者 Q_RETURNARG(type, name)，总之和正常的调用有一些区别。

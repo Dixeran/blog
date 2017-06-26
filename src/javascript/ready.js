@@ -1,45 +1,56 @@
 /**
  * Created by lenovo on 2017/6/25.
  */
-function Editor(input, preview) {
-    this.update = function () {
-        preview.innerHTML = markdown.toHTML(input.value);
-    };
-    input.editor = this;
-    this.update();
-}
-
-
 $(document).ready(function () {
     var initList = 0;
+    /*初始化视差*/
     $('.parallax').parallax();
-    $('#cache').load('./src/dist/passage/passageData.json', function (data) {
-        var passageData = [];
-        var JSONdata = JSON.parse(data);
-        for(var t = 0; t<JSONdata.PassageName.length; t++){
-            app.passageName.push(JSONdata.PassageName[t]);
-        }
-        for(var k = 0; k<5 && k<JSONdata.PassageName.length; k++) {
-            $('#cache').load('./src/dist/passage/' + JSONdata.PassageName[k] + '.txt', function (data) {
-                passageData.push(markdown.toHTML(data));
-            });
-        }
-        setTimeout(function () {
-            for(var p = 0; p< 5 && p < JSONdata.PassageName.length; p++){
-                $('#' + JSONdata.PassageName[p] + 'conTent').html(passageData[p]);
+    /*读取文章列表*/
+    $.ajax({
+        url:"./src/dist/passage/passageData.json",
+        async:false,
+        success:function (response) {
+            var passageData = [];
+            var JSONdata = response;
+            for(var t = 0; t<JSONdata.PassageName.length; t++){
+                app.passageName.push(JSONdata.PassageName[t]);
             }
-            $('pre code').each(function(i, block) {
-                hljs.highlightBlock(block);
-            });
-            $('.progress').remove();
-        }, 1000);
+            for(var k = 0; k<5 && k<JSONdata.PassageName.length; k++) {
+                $.ajax({
+                    url:'./src/dist/passage/' + JSONdata.PassageName[k][0] + '.txt',
+                    async:false,
+                    success:function (data) {
+                        passageData.push(markdown.toHTML(data));
+                    }
+                });
+            }
+            setTimeout(function () {
+                for(var p = 0; p< 5 && p < JSONdata.PassageName.length; p++){
+                    $('#' + JSONdata.PassageName[p][0] + 'conTent').html(passageData[p]);
+                }
+                $('pre code').each(function(i, block) {
+                    hljs.highlightBlock(block);
+                });
+                $('h1').addClass('text-darken-1 blue-grey-text');
+                $('.progress').remove();
+            }, 1500);
+        }
     });
+
+    /*设置初始化目录*/
     $(window).scroll(function () {
         if(initList == 0){
             $('.scrollspy').scrollSpy();
             initList = 1;
         }
     });
-});
 
-//$(JSONdata.PassageName[k] + 'conTent')
+    var elm = $('#catalog');
+    var startPos = $(elm).offset().top;
+    $.event.add(window, 'scroll', function () {
+        var p = $(window).scrollTop();
+        $(elm).css('position',((p) > startPos) ? 'fixed' : 'static');
+        $(elm).css('right',((p) > startPos) ? '0px' : '');
+        $(elm).css('top',((p) > startPos) ? '75px' : '');
+    })
+});
