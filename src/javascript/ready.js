@@ -17,7 +17,7 @@ $(document).ready(function () {
             }
             for(var k = 0; k<5 && k<JSONdata.PassageName.length; k++) {
                 $.ajax({
-                    url:'./src/dist/passage/' + JSONdata.PassageName[k][0] + '.txt',
+                    url:'./src/dist/passage/' + JSONdata.PassageName[k][0] + '.md',
                     async:false,
                     success:function (data) {
                         passageData.push(markdown.toHTML(data));
