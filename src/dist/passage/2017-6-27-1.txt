@@ -1,0 +1,14 @@
+#用Synergy在多个终端共享键鼠
+拥有多个设备的时候，使用 Synergy 可以在不同屏幕之间使鼠标穿越，这与 Remote Desktop 之类的应用有本质区别。
+
+在 Linux、Mac、Windows 上都可以使用Synergy进行不同系统之间互联。
+Windows 可以直接在网上搜索下载，Linux下使用
+
+    sudo apt-get install synergy
+
+即可安装 Synergy（版本稍旧，大概 1.6 左右）
+
+在使用Windows作为服务器，xubuntu+xfce作为客户端连接时，发现鼠标无法从S端→C端，解决方法：
+1、右键synergy.exe，属性，兼容性，对所有用户更改设置，取消“高DPI缩放”
+2、synergys.exe\synergyc.exe同理
+设置后重启服务，问题解决
